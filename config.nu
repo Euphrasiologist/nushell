@@ -37,8 +37,10 @@ def vsc [
 def gl [] {
   # check if it's a git repo
   let is_fatal = (do -i {git status} | complete | get stderr | str contains "fatal")
-  error make {
-    msg: "Not a git repo!"
+  if $is_fatal {
+      error make {
+        msg: "Not a git repo!"
+    }
   }
   git log --pretty=%h»¦«%aN»¦«%s»¦«%aD | lines | split column "»¦«" sha1 committer desc merged_at
 }
@@ -50,8 +52,8 @@ def create_left_prompt [] {
   let in_root = (($env.PWD) | path split | skip 1 | empty?)
 
   if $in_root {
-    # return slaaash
-    "/"
+    # return RED eslaaash
+    echo [(ansi {fg: "FD3A2D", bg: ""}) "/"] | str collect
   } else {
     # get first two and last two path elements...
     let first = (($env.PWD) | path split | skip 1 | first 2)
@@ -62,11 +64,23 @@ def create_left_prompt [] {
     let last_second = ($last | any? (echo $it | str contains $first.1))
 
     if $last_first || $last_second {
-      # just return the path segment
-      ($env.PWD)
+      # I deal with this really badly
+      let pwd = (($env.PWD) | path split)
+      let root = $pwd.0
+      # ignore errors if we 
+      let one = do -i { $pwd.1 } 
+      let two = do -i { $pwd.2 }
+      let three = do -i { $pwd.3 }
+      
+      let one_sep = (if ($two | empty?) { echo } else { echo / })
+      let two_sep = (if ($three | empty?) { echo } else { echo / })
+
+      echo [ (ansi reset) $root (ansi {fg: "FE612C", bg: ""}) $one (ansi reset) $one_sep (ansi {fg: "FF872C", bg: ""}) $two (ansi reset) $two_sep (ansi {fg: "FFA12C", bg: ""}) $three] | str collect
+      
     } else {
       # combine both in this wonderful format.
-      $first.0 + "/" + $first.1 + "..." + $last.0 + "/" + $last.1
+      # with colour
+      echo [(ansi {fg: "FD3A2D", bg: ""}) $first.0 (ansi reset) / (ansi {fg: "FE612C", bg: ""}) $first.1 (ansi reset) ... (ansi {fg: "FF872C", bg: ""}) $last.0 (ansi reset) / (ansi {fg: "FFA12C", bg: ""}) $last.1] | str collect
     }
   }
 }
