@@ -1,5 +1,9 @@
 # Nushell Config File
 
+# add to path
+# not sure why this was not there.
+let-env PATH = ($env.PATH | append "/usr/local/bin/")
+
 # add git status to ls (experiment, requires dfr)
 # mangles file names if there are spaces in them
 # which there probably shouldn't be anyway :)
@@ -33,7 +37,7 @@ def vsc [
   '/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code' + " " + $path | bash
 }
 
-# show the git log in pretty
+# show the git log in pretty print
 def gl [] {
   # check if it's a git repo
   let is_fatal = (do -i {git status} | complete | get stderr | str contains "fatal")
@@ -52,7 +56,7 @@ def create_left_prompt [] {
   let in_root = (($env.PWD) | path split | skip 1 | empty?)
 
   if $in_root {
-    # return RED eslaaash
+    # return RED slaaash
     echo [(ansi {fg: "FD3A2D", bg: ""}) "/"] | str collect
   } else {
     # get first two and last two path elements...
@@ -79,10 +83,21 @@ def create_left_prompt [] {
       
     } else {
       # combine both in this wonderful format.
-      # with colour
-      echo [(ansi {fg: "FD3A2D", bg: ""}) $first.0 (ansi reset) / (ansi {fg: "FE612C", bg: ""}) $first.1 (ansi reset) ... (ansi {fg: "FF872C", bg: ""}) $last.0 (ansi reset) / (ansi {fg: "FFA12C", bg: ""}) $last.1] | str collect
+      # with colour!
+      echo [(ansi {fg: "FD3A2D", bg: ""}) $first.0 (ansi reset) / (ansi {fg: "FE612C", bg: ""}) $first.1 (ansi reset) ... (ansi {fg: "FF872C", bg: ""}) $last.0 (ansi reset) / (ansi {fg: "FFA12C", bg: ""}) $last.1 ] | str collect
     }
   }
+}
+
+def up_inner [limit: int] {
+  (for $e in 1..$limit { "../" } | str collect)
+}
+
+# Go up a number of directories
+def-env up [
+    limit: int # The number of directories to go up
+  ] {
+  cd (up_inner $limit)
 }
 
 def create_right_prompt [] {
@@ -103,7 +118,7 @@ let-env PROMPT_COMMAND_RIGHT = { create_right_prompt }
 let-env PROMPT_INDICATOR = " > "
 let-env PROMPT_INDICATOR_VI_INSERT = ": "
 let-env PROMPT_INDICATOR_VI_NORMAL = " > "
-let-env PROMPT_MULTILINE_INDICATOR = "::: "
+let-env PROMPT_MULTILINE_INDICATOR = (echo (ansi {fg: "FE612C", bg: ""}) ":" (ansi {fg: "FF872C", bg: ""}) ":" (ansi {fg: "FFA12C", bg: ""}) ": "  | str collect)
 
 # Specifies how environment variables are:
 # - converted from a string to a value on Nushell startup (from_string)
