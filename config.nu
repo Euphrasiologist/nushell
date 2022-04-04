@@ -2,7 +2,17 @@
 
 # add to path
 # not sure why this was not there.
-let-env PATH = ($env.PATH | append "/usr/local/bin/")
+let-env PATH = ($env.PATH | append ["/usr/local/bin/" 
+  "/Users/mb39/homebrew/opt/gnu-sed/libexec/gnubin" 
+  "/Users/mb39/.cargo/bin"
+  "/Users/mb39/perl5/bin"
+  "/Users/mb39/Library/Python/3.8/bin"
+  "/Users/mb39/homebrew/Cellar/cmake/3.21.3/bin/cmake"
+  "/Users/mb39/homebrew/Cellar/pkg-config/0.29.2_3/bin/"])
+
+let-env PKG_CONFIG_PATH = "/Users/mb39/homebrew/opt/icu4c/lib/pkgconfig"
+
+# :/Users/mb39/perl5/bin:/Users/mb39/Library/Python/3.8/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/:/Users/mb39/homebrew/Cellar/cmake/3.21.3/bin/cmake
 
 # add git status to ls (experiment, requires dfr)
 # mangles file names if there are spaces in them
@@ -26,6 +36,7 @@ def lg [] {
 
     let ls_dfr = (ls | dfr to-df)
 
+    # but you lose syntax highlighting
     $ls_dfr | dfr join $status -l [name] -r [name] -t left | dfr to-nu
   }
 }
@@ -90,14 +101,14 @@ def create_left_prompt [] {
 }
 
 def up_inner [limit: int] {
-  (for $e in 1..$limit { "../" } | str collect)
+  (for $e in 0..$limit { "." } | str collect)
 }
 
 # Go up a number of directories
 def-env up [
     limit: int # The number of directories to go up
   ] {
-  cd (up_inner $limit)
+    cd (up_inner $limit)
 }
 
 def create_right_prompt [] {
@@ -278,7 +289,7 @@ let default_theme = {
 # The default config record. This is where much of your global configuration is setup.
 let $config = {
   filesize_metric: false
-  table_mode: rounded # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
+  table_mode: compact # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
   use_ls_colors: true
   rm_always_trash: false
   color_config: $default_theme
@@ -291,7 +302,7 @@ let $config = {
   use_ansi_coloring: true
   filesize_format: "auto" # b, kb, kib, mb, mib, gb, gib, tb, tib, pb, pib, eb, eib, zb, zib, auto
   edit_mode: emacs # emacs, vi
-  max_history_size: 10000
+  max_history_size: 100000
   menu_config: {
     columns: 4
     col_width: 20   # Optional value. If missing all the screen width is used to calculate column width
