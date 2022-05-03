@@ -1,19 +1,5 @@
 # Nushell Config File
 
-# add to path
-# not sure why this was not there.
-let-env PATH = ($env.PATH | append ["/usr/local/bin/" 
-  "/Users/mb39/homebrew/opt/gnu-sed/libexec/gnubin" 
-  "/Users/mb39/.cargo/bin"
-  "/Users/mb39/perl5/bin"
-  "/Users/mb39/Library/Python/3.8/bin"
-  "/Users/mb39/homebrew/Cellar/cmake/3.21.3/bin/cmake"
-  "/Users/mb39/homebrew/Cellar/pkg-config/0.29.2_3/bin/"])
-
-let-env PKG_CONFIG_PATH = "/Users/mb39/homebrew/opt/icu4c/lib/pkgconfig"
-
-# :/Users/mb39/perl5/bin:/Users/mb39/Library/Python/3.8/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/:/Users/mb39/homebrew/Cellar/cmake/3.21.3/bin/cmake
-
 # add git status to ls (experiment, requires dfr)
 # mangles file names if there are spaces in them
 # which there probably shouldn't be anyway :)
