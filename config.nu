@@ -23,7 +23,7 @@ def lg [] {
     let ls_dfr = (ls | dfr to-df)
 
     # but you lose syntax highlighting
-    $ls_dfr | dfr join $status -l [name] -r [name] -t left | dfr to-nu
+    $ls_dfr | dfr join $status [name] [name] --left | dfr to-nu
   }
 }
 
