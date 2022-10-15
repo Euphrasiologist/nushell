@@ -4,8 +4,7 @@
 
 alias s = (git status -sb)
 
-alias ga = (git add -A)
-alias gap = (ga -p)
+alias gap = (git add -A -p)
 
 def gc [msg: string] {
   git commit -v -m $"($msg)"
