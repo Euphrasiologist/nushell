@@ -1,5 +1,15 @@
 # Nushell Config File
 
+# add git aliases for common version controlling bits
+
+alias s = (git status -sb)
+
+alias ga = (git add -A)
+alias gap = (ga -p)
+
+def gc [msg: string]
+  git commit -v -m $"($msg)"
+
 # add git status to ls (experiment, requires dfr)
 # mangles file names if there are spaces in them
 # which there probably shouldn't be anyway :)
