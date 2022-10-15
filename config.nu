@@ -2,9 +2,9 @@
 
 # add git aliases for common version controlling bits
 
-alias s = (git status -sb)
+alias s = git status -sb
 
-alias gap = (git add -A -p)
+alias gap = git add -A -p
 
 def gc [msg: string] {
   git commit -v -m $"($msg)"
