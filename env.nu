@@ -8,17 +8,17 @@ def create_left_prompt [] {
 
   if $in_root {
     # return RED slaaash
-    echo [(ansi {fg: "FD3A2D", bg: ""}) "/"] | str collect
+    echo [(ansi {fg: "#FD3A2D", bg: ""}) "/"] | str collect
   } else {
     # get first two and last two path elements...
     let first = (($env.PWD) | path split | skip 1 | first 2)
     let last = (($env.PWD) | path split | last 2)
     
     # check if the last contains either the first or last elements of last.
-    let last_first = ($last | any ($it | str contains $first.0))
-    let last_second = ($last | any ($it | str contains $first.1))
+    let last_first = ($last | any { |e| echo $e | str contains $first.0 })
+    let last_second = ($last | any { |e| echo $e | str contains $first.1 })
 
-    if $last_first || $last_second {
+    if $last_first or $last_second {
       # I deal with this really badly
       let pwd = (($env.PWD) | path split)
       let root = $pwd.0
@@ -30,12 +30,12 @@ def create_left_prompt [] {
       let one_sep = (if ($two | is-empty) { echo } else { echo / })
       let two_sep = (if ($three | is-empty) { echo } else { echo / })
 
-      echo [ (ansi reset) $root (ansi {fg: "FE612C", bg: ""}) $one (ansi reset) $one_sep (ansi {fg: "FF872C", bg: ""}) $two (ansi reset) $two_sep (ansi {fg: "FFA12C", bg: ""}) $three] | str collect
+      echo [ (ansi reset) $root (ansi {fg: "#FE612C", bg: ""}) $one (ansi reset) $one_sep (ansi {fg: "#FF872C", bg: ""}) $two (ansi reset) $two_sep (ansi {fg: "#FFA12C", bg: ""}) $three] | str collect
       
     } else {
       # combine both in this wonderful format.
       # with colour!
-      echo [(ansi {fg: "FD3A2D", bg: ""}) $first.0 (ansi reset) / (ansi {fg: "FE612C", bg: ""}) $first.1 (ansi reset) ... (ansi {fg: "FF872C", bg: ""}) $last.0 (ansi reset) / (ansi {fg: "FFA12C", bg: ""}) $last.1 ] | str collect
+      echo [(ansi {fg: "FD3A2D", bg: ""}) $first.0 (ansi reset) / (ansi {fg: "#FE612C", bg: ""}) $first.1 (ansi reset) ... (ansi {fg: "#FF872C", bg: ""}) $last.0 (ansi reset) / (ansi {fg: "#FFA12C", bg: ""}) $last.1 ] | str collect
     }
   }
 }
@@ -43,7 +43,7 @@ def create_left_prompt [] {
 def create_right_prompt [] {
     let time_segment = ([
         # changed to UK date format
-        (ansi {fg: "FFA12C", bg: ""}) (date now | date format '%d/%m/%Y %r')
+        (ansi {fg: "#FFA12C", bg: ""}) (date now | date format '%d/%m/%Y %r')
     ] | str collect)
 
     $time_segment
@@ -55,10 +55,10 @@ let-env PROMPT_COMMAND_RIGHT = { create_right_prompt }
 
 # The prompt indicators are environmental variables that represent
 # the state of the prompt
-let-env PROMPT_INDICATOR = (echo (ansi {fg: "FFA12C", bg: ""}) " > " | str collect)
+let-env PROMPT_INDICATOR = (echo (ansi {fg: "#FFA12C", bg: ""}) " > " | str collect)
 let-env PROMPT_INDICATOR_VI_INSERT = ": "
-let-env PROMPT_INDICATOR_VI_NORMAL = (echo (ansi {fg: "FFA12C", bg: ""}) " > " | str collect)
-let-env PROMPT_MULTILINE_INDICATOR = (echo (ansi {fg: "FE612C", bg: ""}) ":" (ansi {fg: "FF872C", bg: ""}) ":" (ansi {fg: "FFA12C", bg: ""}) ": "  | str collect)
+let-env PROMPT_INDICATOR_VI_NORMAL = (echo (ansi {fg: "#FFA12C", bg: ""}) " > " | str collect)
+let-env PROMPT_MULTILINE_INDICATOR = (echo (ansi {fg: "#FE612C", bg: ""}) ":" (ansi {fg: "#FF872C", bg: ""}) ":" (ansi {fg: "#FFA12C", bg: ""}) ": "  | str collect)
 
 # Specifies how environment variables are:
 # - converted from a string to a value on Nushell startup (from_string)
@@ -96,7 +96,8 @@ let-env NU_PLUGIN_DIRS = [
 # not sure why this was not there.
 let-env PATH = ($env.PATH | append ["/usr/local/bin/" 
   "/Users/mbrown/homebrew/opt/gnu-sed/libexec/gnubin" 
-  "/Users/mbrown/.cargo/bin"])
+  "/Users/mbrown/.cargo/bin"
+  "/Users/mbrown/.deno/bin"])
 
 let-env PKG_CONFIG_PATH = "/Users/mbrown/homebrew/opt/icu4c/lib/pkgconfig"
 
@@ -211,7 +212,7 @@ module panache-plumbing {
 
     let has_staging_or_worktree_changes = (if $in_git_repo {
       $status
-      | where ($it | str starts-with '1') || ($it | str starts-with '2')
+      | where ($it | str starts-with '1') or ($it | str starts-with '2')
       | str collect
       | is-empty
       | nope
@@ -241,7 +242,7 @@ module panache-plumbing {
 
     let staging_worktree_table = (if $has_staging_or_worktree_changes {
       $status
-      | where ($it | str starts-with '1') || ($it | str starts-with '2')
+      | where ($it | str starts-with '1') or ($it | str starts-with '2')
       | split column ' '
       | get column2
       | split column '' staging worktree --collapse-empty
@@ -331,31 +332,31 @@ module panache-plumbing {
     let is_local_only = ($status.tracking_upstream_branch != true)
 
     let upstream_deleted = (
-      $status.tracking_upstream_branch &&
+      $status.tracking_upstream_branch and
       $status.upstream_exists_on_remote != true
     )
 
     let is_up_to_date = (
-      $status.upstream_exists_on_remote &&
-      $status.commits_ahead == 0 &&
+      $status.upstream_exists_on_remote and
+      $status.commits_ahead == 0 and
       $status.commits_behind == 0
     )
 
     let is_ahead = (
-      $status.upstream_exists_on_remote &&
-      $status.commits_ahead > 0 &&
+      $status.upstream_exists_on_remote and
+      $status.commits_ahead > 0 and
       $status.commits_behind == 0
     )
 
     let is_behind = (
-      $status.upstream_exists_on_remote &&
-      $status.commits_ahead == 0 &&
+      $status.upstream_exists_on_remote and
+      $status.commits_ahead == 0 and
       $status.commits_behind > 0
     )
 
     let is_ahead_and_behind = (
-      $status.upstream_exists_on_remote &&
-      $status.commits_ahead > 0 &&
+      $status.upstream_exists_on_remote and
+      $status.commits_ahead > 0 and
       $status.commits_behind > 0
     )
 
@@ -390,15 +391,15 @@ module panache-plumbing {
     })
 
     let has_staging_changes = (
-      $status.staging_added_count > 0 ||
-      $status.staging_modified_count > 0 ||
+      $status.staging_added_count > 0 or
+      $status.staging_modified_count > 0 or
       $status.staging_deleted_count > 0
     )
 
     let has_worktree_changes = (
-      $status.untracked_count > 0 ||
-      $status.worktree_modified_count > 0 ||
-      $status.worktree_deleted_count > 0 ||
+      $status.untracked_count > 0 or
+      $status.worktree_modified_count > 0 or
+      $status.worktree_deleted_count > 0 or
       $status.merge_conflict_count > 0
     )
 
@@ -422,7 +423,7 @@ module panache-plumbing {
       ''
     })
 
-    let delimiter = (if ($has_staging_changes && $has_worktree_changes) {
+    let delimiter = (if ($has_staging_changes and $has_worktree_changes) {
       ('|' | bright-yellow)
     } else {
       ''

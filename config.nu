@@ -56,16 +56,16 @@ def gl [] {
   git log --pretty=%h»¦«%aN»¦«%s»¦«%aD | lines | split column "»¦«" sha1 committer desc merged_at
 }
 
-def up_inner [limit: int] {
-  (for $e in 0..$limit { "." } | str collect)
-}
+# def up_inner [limit: int] {
+#   (for $e in 0..$limit { "." } | str collect)
+# }
 
-# Go up a number of directories
-def-env up [
-    limit: string # The number of directories to go up
-  ] {
-    cd (up_inner ($limit | into int))
-}
+# # Go up a number of directories
+# def-env up [
+#     limit: string # The number of directories to go up
+#   ] {
+#     cd (up_inner ($limit | into int))
+# }
 
 module completions {
   # Custom completions for external commands (those outside of Nushell)
